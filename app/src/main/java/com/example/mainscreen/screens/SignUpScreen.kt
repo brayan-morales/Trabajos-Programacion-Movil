@@ -19,12 +19,16 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun SignUpScreen(navController: NavController) {
+    fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -52,10 +56,14 @@ fun SignUpScreen(navController: NavController) {
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                name = it
+                emailError = !isValidEmail(it)
+            },
             label = { Text("Correo") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = emailError
         )
 
         Spacer(modifier = Modifier.height(10.dp))
