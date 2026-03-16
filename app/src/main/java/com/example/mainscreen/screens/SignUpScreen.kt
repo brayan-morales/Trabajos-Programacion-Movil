@@ -19,9 +19,6 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun SignUpScreen(navController: NavController) {
-    fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -29,7 +26,40 @@ fun SignUpScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }
+    var nameError by remember { mutableStateOf(false) }
+    var phoneError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
+    fun isValidName(name: String): Boolean {
+        return name.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))
+    }
+
+    fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun isValidPhone(phone: String): Boolean{
+        return phone.matches(Regex("^[0-9]{10}\$"))
+    }
+
+    fun passwordsMatch(password: String, confirmPassword: String): Boolean {
+        return password == confirmPassword
+    }
+
+    fun isFormValid(name: String, email: String, phone: String, password: String, confirmPassword: String): Boolean {
+        val fieldsFilled = name.isNotBlank() &&
+                email.isNotBlank() &&
+                phone.isNotBlank() &&
+                password.isNotBlank() &&
+                confirmPassword.isNotBlank()
+
+        val validName = isValidName(name)
+        val validEmail = isValidEmail(email)
+        val validPhone = isValidPhone(phone)
+        val passwordsMatch = passwordsMatch(password, confirmPassword)
+
+        return fieldsFilled && validName && validEmail && validPhone && passwordsMatch
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,9 +77,13 @@ fun SignUpScreen(navController: NavController) {
 
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it },
+            onValueChange = {
+                name = it
+                nameError = !isValidName(it)
+            },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = nameError
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -57,7 +91,7 @@ fun SignUpScreen(navController: NavController) {
         OutlinedTextField(
             value = email,
             onValueChange = {
-                name = it
+                email = it
                 emailError = !isValidEmail(it)
             },
             label = { Text("Correo") },
@@ -70,30 +104,42 @@ fun SignUpScreen(navController: NavController) {
 
         OutlinedTextField(
             value = phone,
-            onValueChange = { phone = it },
+            onValueChange = {
+                phone = it
+                phoneError = !isValidPhone(it)
+            },
             label = { Text("Teléfono") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = phoneError
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                passwordError = !passwordsMatch(password, confirmPassword)
+            },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = passwordError
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            onValueChange = {
+                confirmPassword = it
+                passwordError = !passwordsMatch(password, confirmPassword)
+            },
             label = { Text("Confirmar Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = passwordError
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -106,7 +152,8 @@ fun SignUpScreen(navController: NavController) {
             Button(
                 onClick = {
                     navController.navigate("login")
-                }
+                },
+                enabled = isFormValid(name, email, phone, password, confirmPassword)
             ) {
                 Text("Aceptar")
             }

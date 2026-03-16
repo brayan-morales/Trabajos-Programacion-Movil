@@ -24,8 +24,6 @@ import com.example.mainscreen.R
 
 @Composable
 fun LoginScreen(navController: NavController) {
-
-    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -53,23 +51,7 @@ fun LoginScreen(navController: NavController) {
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = "Name",
-            fontSize = 16.sp,
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Escribe tu nombre") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp)
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Text(
             text = "Email",
@@ -86,7 +68,7 @@ fun LoginScreen(navController: NavController) {
             shape = RoundedCornerShape(10.dp)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
             text = "Password",
@@ -104,7 +86,7 @@ fun LoginScreen(navController: NavController) {
             shape = RoundedCornerShape(10.dp)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
